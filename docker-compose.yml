@@ -1,0 +1,27 @@
+version: "3.5"
+
+services:
+#  web:
+#    container_name: go
+#    build: ./
+#    ports:
+#      - "8000:8000"
+#    working_dir: /app
+#    volumes:
+#      - .:/app
+#    environment:
+#      DD_DB_HOST: db
+#    command: /main
+#    depends_on:
+#      - db
+  db:
+    container_name: go-db
+    image: postgres:14.1-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: goland
+      POSTGRES_PASSWORD: goland
+      POSTGRES_DB: goland
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
