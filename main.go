@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go_project/src/users/models"
+	"go_project/src/users/store"
 	//"fmt"
 	"log"
 	//"net/http"
@@ -27,7 +27,7 @@ func main() {
 		"disable",//os.Getenv("SSL_MODE"),
 	)
 
-	models.Init(a)
+	store.Init(a)
 	//_ = config.InitWorkers
 	userModule := controllers.App{}
 

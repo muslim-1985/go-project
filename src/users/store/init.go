@@ -1,4 +1,4 @@
-package models
+package store
 
 import (
 	"database/sql"
@@ -13,4 +13,8 @@ var conn = new(DbConnect)
 
 func Init (a config.App) {
 	conn.db = a.DB
+}
+
+func Create () *UserRepository  {
+	return &UserRepository{}
 }
