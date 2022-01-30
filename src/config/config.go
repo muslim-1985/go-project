@@ -7,7 +7,7 @@ import (
 )
 
 type App struct {
-	DB     *sql.DB
+	DB *sql.DB
 }
 
 //type Workers struct {

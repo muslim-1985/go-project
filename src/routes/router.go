@@ -3,15 +3,18 @@ package routes
 import (
 	"github.com/gorilla/mux"
 	"go_project/src/users/controllers"
-	"log"
 	"net/http"
-	"time"
 )
 
 type Route struct {
 	Router *mux.Router
 	Serv   *http.Server
 	UserAction controllers.App
+}
+
+type Router interface {
+	createRoute()
+   initializeRoutes()
 }
 
 func (a *Route) CreateRoute() {
@@ -26,15 +29,4 @@ func (a *Route) initializeRoutes() {
 	a.Router.HandleFunc("/api/user/{id:[0-9]+}", a.UserAction.GetUser).Methods("GET")
 	a.Router.HandleFunc("/api/user/update/{id:[0-9]+}", a.UserAction.UpdateUser).Methods("PUT")
 	a.Router.HandleFunc("/api/user/delete/{id:[0-9]+}", a.UserAction.DeleteUser).Methods("DELETE")
-}
-
-func (a *Route) Run(addr string) {
-	a.Serv = &http.Server{
-		Addr:         addr,
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
-		Handler:      a.Router,
-	}
-	log.Fatal(a.Serv.ListenAndServe())
 }

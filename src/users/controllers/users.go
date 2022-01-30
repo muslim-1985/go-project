@@ -9,6 +9,9 @@ import (
 	"strconv"
 )
 
+type App struct {
+}
+
 func (a *App) GetUsers(w http.ResponseWriter, r *http.Request) {
 	count, _ := strconv.Atoi(r.FormValue("count"))
 	start, _ := strconv.Atoi(r.FormValue("start"))
@@ -20,13 +23,13 @@ func (a *App) GetUsers(w http.ResponseWriter, r *http.Request) {
 		start = 0
 	}
 
-	products, err := models.GetUsers(a.DB, start, count)
+	users, err := models.GetUsers(start, count)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, products)
+	respondWithJSON(w, http.StatusOK, users)
 }
 
 func (a *App) UserRegister(w http.ResponseWriter, r *http.Request) {
@@ -36,9 +39,10 @@ func (a *App) UserRegister(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
+	p.RoleId = 1
 	defer r.Body.Close()
 
-	if err := p.UserRegister(a.DB); err != nil {
+	if err := p.UserRegister(); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -55,7 +59,7 @@ func (a *App) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if err := p.LoginUser(a.DB); err != nil {
+	if err := p.LoginUser(); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -72,7 +76,7 @@ func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := models.User{ID: id}
-	if err := p.GetUser(a.DB); err != nil {
+	if err := p.GetUser(); err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			respondWithError(w, http.StatusNotFound, "Product not found")
@@ -102,7 +106,7 @@ func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	p.ID = id
 
-	if err := p.UpdateUser(a.DB); err != nil {
+	if err := p.UpdateUser(); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -119,7 +123,7 @@ func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := models.User{ID: id}
-	if err := p.DeleteUser(a.DB); err != nil {
+	if err := p.DeleteUser(); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
