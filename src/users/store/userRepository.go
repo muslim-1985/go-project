@@ -1,9 +1,7 @@
 package store
 
 import (
-	"errors"
 	"go_project/src/users/models"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository struct {
@@ -29,48 +27,28 @@ func (p *UserRepository) DeleteUser(e *models.User) error {
 	return err
 }
 
-func (p *UserRepository) LoginUser(e *models.User) error {
+func (p *UserRepository) IsUserExistByEmail(e *models.User) (error, bool)  {
 	var checkUserExist *bool
-	var password *string
+
 	err := conn.db.QueryRow("select exists(select email from users where email=$1)",
 		e.Email).Scan(&checkUserExist)
-	if *checkUserExist {
-		err := conn.db.QueryRow("select password from users where email=$1", e.Email).Scan(&password)
-		if err != nil {
-			return err
-		}
-		byteHash := []byte(*password)
-		bytePass := []byte(e.Password)
-		result := bcrypt.CompareHashAndPassword(byteHash, bytePass)
-		if result != nil {
-			return errors.New("Login or password is not correct")
-		}
-		return conn.db.QueryRow("SELECT username, email FROM users WHERE email=$1",
-			e.Email).Scan(&e.Username, &e.Email)
-	}
-	if err != nil {
-		return err
-	}
-	return errors.New("Login or password is not correct")
+
+	return err, *checkUserExist
 }
 
-func (p *UserRepository) UserRegister(e *models.User) error {
-	var checkUserExist *bool
-	err := conn.db.QueryRow("select exists(select email from users where email=$1)",
-		e.Email).Scan(&checkUserExist)
-	if *checkUserExist {
-		return errors.New("A user is already registered to this mail")
-	}
-	if err != nil {
-		return err
-	}
-	bytePassword := []byte(e.Password)
-	hash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.MinCost)
-	if err != nil {
-		return err
-	}
-	password := string(hash)
-	e.Password = password
+func (p *UserRepository) GetUserPassword(e *models.User) (error, string)  {
+	var password *string
+	err := conn.db.QueryRow("select password from users where email=$1", e.Email).Scan(&password)
+
+	return err, *password
+}
+
+func (p *UserRepository) GetUsernameAndEmail (e *models.User) error  {
+	return conn.db.QueryRow("SELECT username, email FROM users WHERE email=$1",
+		e.Email).Scan(&e.Username, &e.Email)
+}
+
+func (p *UserRepository) CreateUser(e *models.User) error {
 	error1 := conn.db.QueryRow(
 		"INSERT INTO users(username, email, password, role_id) VALUES($1, $2, $3, $4) RETURNING id, (select username from roles where roles.id = $4)", e.Username,
 		e.Email, e.Password, e.RoleId).Scan(&e.ID, &e.Role)
@@ -79,6 +57,7 @@ func (p *UserRepository) UserRegister(e *models.User) error {
 	}
 	return nil
 }
+
 
 func (p *UserRepository) GetUsers (start, count int) ([]models.User, error) {
 	rows, err := conn.db.Query(

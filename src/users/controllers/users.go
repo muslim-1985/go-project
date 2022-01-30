@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"go_project/src/users/models"
-	"go_project/src/users/store"
+	"go_project/src/users/models/services"
 	"net/http"
 	"strconv"
 )
@@ -13,7 +13,7 @@ import (
 type App struct {
 }
 
-var userRepository = store.Create()
+var userService = services.Create()
 
 func (a *App) GetUsers(w http.ResponseWriter, r *http.Request) {
 	count, _ := strconv.Atoi(r.FormValue("count"))
@@ -26,7 +26,7 @@ func (a *App) GetUsers(w http.ResponseWriter, r *http.Request) {
 		start = 0
 	}
 
-	users, err := userRepository.GetUsers(start, count)
+	users, err := userService.GetUsers(start, count)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -45,7 +45,7 @@ func (a *App) UserRegister(w http.ResponseWriter, r *http.Request) {
 	p.RoleId = 1
 	defer r.Body.Close()
 
-	if err := userRepository.UserRegister(&p); err != nil {
+	if err := userService.UserRegister(&p); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -62,7 +62,7 @@ func (a *App) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if err := userRepository.LoginUser(p); err != nil {
+	if err := userService.LoginUser(p); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -79,7 +79,7 @@ func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := models.User{ID: id}
-	if err := userRepository.GetUser(&p); err != nil {
+	if err := userService.GetUser(&p); err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			respondWithError(w, http.StatusNotFound, "Product not found")
@@ -109,7 +109,7 @@ func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	p.ID = id
 
-	if err := userRepository.UpdateUser(&p); err != nil {
+	if err := userService.UpdateUser(&p); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -126,7 +126,7 @@ func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := models.User{ID: id}
-	if err := userRepository.DeleteUser(&p); err != nil {
+	if err := userService.DeleteUser(&p); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
