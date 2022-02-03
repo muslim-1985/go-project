@@ -1,6 +1,8 @@
 package main
 
 import (
+	"go_project/src/common"
+	"go_project/src/common/di"
 	"go_project/src/users/store"
 	//"fmt"
 	"log"
@@ -28,11 +30,16 @@ func main() {
 	)
 
 	store.Init(a)
+	application := common.App{}
+	appService := di.AppService{}
+	services := appService.InitService()
+	application.Services = services
 	//_ = config.InitWorkers
-	userModule := controllers.App{}
+	controller := controllers.AppController{}
+	controller.Application = &application
 
 	route := mux.NewRouter()
-	r := routes.Route{UserAction: userModule, Router: route}
+	r := routes.Route{Action: controller, Router: route}
 	r.CreateRoute()
 	//quoteChan := parser.Grab()
 	//for i := 0; i < 5; i++ { //получаем 5 цитат и закругляемся

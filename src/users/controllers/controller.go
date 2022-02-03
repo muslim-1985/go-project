@@ -6,12 +6,17 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	_ "github.com/lib/pq"
+	"go_project/src/common"
+	"go_project/src/users/models"
 	"net/http"
 	"os"
-	"go_project/src/users/models"
 	"strings"
 	"time"
 )
+
+type AppController struct {
+	Application *common.App
+}
 
 type Token struct {
 	Username string

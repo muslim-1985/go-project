@@ -5,14 +5,17 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"go_project/src/users/models"
+	"go_project/src/users/models/services"
 	"net/http"
 	"strconv"
 )
 
-type App struct {
+type UserController struct {
+	App *AppController
+	UserService services.UserServiceInterface
 }
 
-func (a *App) GetUsers(w http.ResponseWriter, r *http.Request) {
+func (a *UserController) GetUsers(w http.ResponseWriter, r *http.Request) {
 	count, _ := strconv.Atoi(r.FormValue("count"))
 	start, _ := strconv.Atoi(r.FormValue("start"))
 
@@ -23,7 +26,7 @@ func (a *App) GetUsers(w http.ResponseWriter, r *http.Request) {
 		start = 0
 	}
 
-	users, err := userService.GetUsers(start, count)
+	users, err := a.UserService.GetUsers(start, count)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -32,7 +35,7 @@ func (a *App) GetUsers(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, users)
 }
 
-func (a *App) UserRegister(w http.ResponseWriter, r *http.Request) {
+func (a *UserController) UserRegister(w http.ResponseWriter, r *http.Request) {
 	var p models.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&p); err != nil {
@@ -42,7 +45,7 @@ func (a *App) UserRegister(w http.ResponseWriter, r *http.Request) {
 	p.RoleId = 1
 	defer r.Body.Close()
 
-	if err := userService.UserRegister(&p); err != nil {
+	if err := a.UserService.UserRegister(&p); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -50,7 +53,7 @@ func (a *App) UserRegister(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, p)
 }
 
-func (a *App) LoginUser(w http.ResponseWriter, r *http.Request) {
+func (a *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	var p *models.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&p); err != nil {
@@ -59,7 +62,7 @@ func (a *App) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if err := userService.LoginUser(p); err != nil {
+	if err := a.UserService.LoginUser(p); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -67,7 +70,7 @@ func (a *App) LoginUser(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, p)
 }
 
-func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
+func (a *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -76,7 +79,7 @@ func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := models.User{ID: id}
-	if err := userService.GetUser(&p); err != nil {
+	if err := a.UserService.GetUser(&p); err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			respondWithError(w, http.StatusNotFound, "Product not found")
@@ -89,7 +92,7 @@ func (a *App) GetUser(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, p)
 }
 
-func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (a *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -106,7 +109,7 @@ func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	p.ID = id
 
-	if err := userService.UpdateUser(&p); err != nil {
+	if err := a.UserService.UpdateUser(&p); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -114,7 +117,7 @@ func (a *App) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, p)
 }
 
-func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (a *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -123,7 +126,7 @@ func (a *App) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := models.User{ID: id}
-	if err := userService.DeleteUser(&p); err != nil {
+	if err := a.UserService.DeleteUser(&p); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
