@@ -29,10 +29,10 @@ func Grab() <-chan []string { //функция вернет канал, из к�
 		go func() {
 			defer close(c)
 			for { //в вечном цикле собираем данные
-				x, err := goquery.ParseUrl("https://www.atbmarket.com/trademark/goods")
+				x, err := goquery.ParseUrl("")
 				x.Find(".promo_image_link").Each(func(index int, element *goquery.Node) {
 					cb := element.Child[1].Attr[0].Val
-					fileUrl := "https://www.atbmarket.com/" + cb
+					fileUrl := "" + cb
 					file := filepath.Base(cb)
 					filePath, _ := filepath.Abs("../../src/parser/public/images/" + file)
 					err := DownloadFile(filePath, fileUrl)
