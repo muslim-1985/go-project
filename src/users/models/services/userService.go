@@ -3,18 +3,11 @@ package services
 import (
 	"errors"
 	"go_project/src/users/models"
-	"go_project/src/users/store"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var userRepository = store.Create()
-
 type UserService struct {
 
-}
-
-func Create() *UserService  {
-	return &UserService{}
 }
 
 func (s *UserService) LoginUser(p *models.User) error {

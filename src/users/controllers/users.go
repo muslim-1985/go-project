@@ -5,15 +5,12 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"go_project/src/users/models"
-	"go_project/src/users/models/services"
 	"net/http"
 	"strconv"
 )
 
 type App struct {
 }
-
-var userService = services.Create()
 
 func (a *App) GetUsers(w http.ResponseWriter, r *http.Request) {
 	count, _ := strconv.Atoi(r.FormValue("count"))

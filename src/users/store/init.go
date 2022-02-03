@@ -15,6 +15,6 @@ func Init (a config.App) {
 	conn.db = a.DB
 }
 
-func Create () *UserRepository  {
-	return &UserRepository{}
+func Create (u *UserRepositoryInterface) *UserRepositoryInterface  {
+	return u
 }
