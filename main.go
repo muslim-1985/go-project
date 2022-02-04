@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go_project/src/common/controllers"
 	"go_project/src/common/di"
 	"go_project/src/users/store"
 	//"fmt"
@@ -10,7 +11,6 @@ import (
 	"github.com/joho/godotenv"
 	"go_project/src/config"
 	"go_project/src/routes"
-	"go_project/src/users/controllers"
 )
 
 func main() {

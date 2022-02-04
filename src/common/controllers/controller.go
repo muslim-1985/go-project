@@ -24,7 +24,7 @@ type Token struct {
 }
 var secretKey = os.Getenv("SECRET_KEY")
 
-func createToken(p *models.User) {
+func (a *AppController) CreateToken(p *models.User) {
 	var mySigningKey = []byte(secretKey)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := make(jwt.MapClaims)
@@ -37,11 +37,11 @@ func createToken(p *models.User) {
 	p.Token = tokenString
 }
 
-func respondWithError(w http.ResponseWriter, code int, message string) {
-	respondWithJSON(w, code, map[string]string{"error": message})
+func (a *AppController) RespondWithError(w http.ResponseWriter, code int, message string) {
+	a.RespondWithJSON(w, code, map[string]string{"error": message})
 }
 
-func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+func (a *AppController) RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
 
 	w.Header().Set("Content-Type", "application/json")
@@ -49,7 +49,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(response)
 }
 
-var JwtAuthentication = func(next http.Handler) http.Handler {
+func(a *AppController) JwtAuthentication (next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -69,14 +69,14 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 
 		if tokenHeader == "" {
 			c := map[string]string{"message": "Missing auth token"}//Token is missing, returns with error code 403 Unauthorized
-			respondWithJSON(w, http.StatusForbidden, c)
+			a.RespondWithJSON(w, http.StatusForbidden, c)
 			return
 		}
 
 		splitted := strings.Split(tokenHeader, " ") //The token normally comes in format `Bearer {token-body}`, we check if the retrieved token matched this requirement
 		if len(splitted) != 2 {
 			c := map[string]string{"message": "Invalid/Malformed auth token"}//Token is missing, returns with error code 403 Unauthorized
-			respondWithJSON(w, http.StatusForbidden, c)
+			a.RespondWithJSON(w, http.StatusForbidden, c)
 			return
 		}
 
@@ -89,13 +89,13 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 
 		if err != nil { //Malformed token, returns with users code 403 as usual
 			c := map[string]string{"message": "Malformed authentication token"}//Token is missing, returns with error code 403 Unauthorized
-			respondWithJSON(w, http.StatusForbidden, c)
+			a.RespondWithJSON(w, http.StatusForbidden, c)
 			return
 		}
 
 		if !token.Valid { //Token is invalid, maybe not signed on this server
 			c := map[string]string{"message": "Token is not valid."}//Token is missing, returns with error code 403 Unauthorized
-			respondWithJSON(w, http.StatusForbidden, c)
+			a.RespondWithJSON(w, http.StatusForbidden, c)
 			return
 		}
 

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"go_project/src/common/controllers"
 	"go_project/src/users/models"
 	"go_project/src/users/models/services"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 )
 
 type UserController struct {
-	AppController *AppController
+	AppController controllers.AppController
 	UserService services.UserServiceInterface
 }
 
@@ -28,53 +29,53 @@ func (a *UserController) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	users, err := a.UserService.GetUsers(start, count)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.AppController.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, users)
+	a.AppController.RespondWithJSON(w, http.StatusOK, users)
 }
 
 func (a *UserController) UserRegister(w http.ResponseWriter, r *http.Request) {
 	var p models.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&p); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		a.AppController.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	p.RoleId = 1
 	defer r.Body.Close()
 
 	if err := a.UserService.UserRegister(&p); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.AppController.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	createToken(&p)
-	respondWithJSON(w, http.StatusCreated, p)
+	a.AppController.CreateToken(&p)
+	a.AppController.RespondWithJSON(w, http.StatusCreated, p)
 }
 
 func (a *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 	var p *models.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&p); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		a.AppController.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	defer r.Body.Close()
 
 	if err := a.UserService.LoginUser(p); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.AppController.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	createToken(p)
-	respondWithJSON(w, http.StatusCreated, p)
+	a.AppController.CreateToken(p)
+	a.AppController.RespondWithJSON(w, http.StatusCreated, p)
 }
 
 func (a *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid product ID")
+		a.AppController.RespondWithError(w, http.StatusBadRequest, "Invalid product ID")
 		return
 	}
 
@@ -82,54 +83,54 @@ func (a *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 	if err := a.UserService.GetUser(&p); err != nil {
 		switch err {
 		case sql.ErrNoRows:
-			respondWithError(w, http.StatusNotFound, "Product not found")
+			a.AppController.RespondWithError(w, http.StatusNotFound, "Product not found")
 		default:
-			respondWithError(w, http.StatusInternalServerError, err.Error())
+			a.AppController.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		}
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, p)
+	a.AppController.RespondWithJSON(w, http.StatusOK, p)
 }
 
 func (a *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid product ID")
+		a.AppController.RespondWithError(w, http.StatusBadRequest, "Invalid product ID")
 		return
 	}
 
 	var p models.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&p); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
+		a.AppController.RespondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
 		return
 	}
 	defer r.Body.Close()
 	p.ID = id
 
 	if err := a.UserService.UpdateUser(&p); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.AppController.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, p)
+	a.AppController.RespondWithJSON(w, http.StatusOK, p)
 }
 
 func (a *UserController) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Product ID")
+		a.AppController.RespondWithError(w, http.StatusBadRequest, "Invalid Product ID")
 		return
 	}
 
 	p := models.User{ID: id}
 	if err := a.UserService.DeleteUser(&p); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		a.AppController.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+	a.AppController.RespondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
