@@ -13,14 +13,16 @@ type App struct {
 //type Workers struct {
 //	Workers int
 //}
-func (a *App) Initialize(user, password, dbname, sslmode string) {
+func (a *App) InitializeDb(user, password, dbname, sslmode string) {
 	connectionString :=
 		fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s", user, password, dbname, sslmode)
 
 	var err error
-	a.DB, err = sql.Open("postgres", connectionString)
-	if err != nil {
-		log.Fatal(err)
+	if a.DB == nil {
+		a.DB, err = sql.Open("postgres", connectionString)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 

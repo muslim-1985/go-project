@@ -1,7 +1,6 @@
 package main
 
 import (
-	"go_project/src/common"
 	"go_project/src/common/di"
 	"go_project/src/users/store"
 	//"fmt"
@@ -22,21 +21,20 @@ func main() {
 
 	a := config.App{}
 
-	a.Initialize(
+	a.InitializeDb(
 		"goland",//os.Getenv("APP_DB_USERNAME"),
 		"goland",//os.Getenv("APP_DB_PASSWORD"),
 		"goland",//os.Getenv("APP_DB_NAME"),
 		"disable",//os.Getenv("SSL_MODE"),
 	)
 
+	services := di.AppService{}
+	initServices := services.InitService()
+
 	store.Init(a)
-	application := common.App{}
-	appService := di.AppService{}
-	services := appService.InitService()
-	application.Services = services
 	//_ = config.InitWorkers
 	controller := controllers.AppController{}
-	controller.Application = &application
+	controller.Services = initServices
 
 	route := mux.NewRouter()
 	r := routes.Route{Action: controller, Router: route}

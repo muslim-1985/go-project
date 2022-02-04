@@ -11,7 +11,7 @@ import (
 )
 
 type UserController struct {
-	App *AppController
+	AppController *AppController
 	UserService services.UserServiceInterface
 }
 

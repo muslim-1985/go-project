@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	_ "github.com/lib/pq"
-	"go_project/src/common"
+	"go_project/src/common/di"
 	"go_project/src/users/models"
 	"net/http"
 	"os"
@@ -15,7 +15,7 @@ import (
 )
 
 type AppController struct {
-	Application *common.App
+	Services *di.AppService
 }
 
 type Token struct {

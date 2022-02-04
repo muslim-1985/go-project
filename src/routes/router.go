@@ -32,7 +32,7 @@ func (a *Route) initializeRoutes() {
 		a.Router.HandleFunc("/api/user/update/{id:[0-9]+}", u.UpdateUser).Methods("PUT")
 		a.Router.HandleFunc("/api/user/delete/{id:[0-9]+}", u.DeleteUser).Methods("DELETE")
 	}(&controllers.UserController{
-		App: &a.Action,
-		UserService: a.Action.Application.Services.UserService,
+		AppController: &a.Action,
+		UserService: a.Action.Services.UserService,
 	})
 }
