@@ -5,6 +5,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const RoleUser = 1
+
 type User struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
@@ -38,4 +40,10 @@ func (p *User) CreatePasswordHash() error  {
 	p.Password = password
 
 	return nil
+}
+
+func (p *User) AddRole ()  {
+	if p.RoleId == 0 {
+		p.RoleId = RoleUser
+	}
 }

@@ -20,7 +20,7 @@ func (a *AuthController) UserRegister(w http.ResponseWriter, r *http.Request) {
 		a.AppController.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	p.RoleId = 1
+
 	defer r.Body.Close()
 
 	if err := a.UserService.UserRegister(&p); err != nil {
