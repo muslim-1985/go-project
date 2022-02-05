@@ -36,41 +36,6 @@ func (a *UserController) GetUsers(w http.ResponseWriter, r *http.Request) {
 	a.AppController.RespondWithJSON(w, http.StatusOK, users)
 }
 
-func (a *UserController) UserRegister(w http.ResponseWriter, r *http.Request) {
-	var p models.User
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&p); err != nil {
-		a.AppController.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-	p.RoleId = 1
-	defer r.Body.Close()
-
-	if err := a.UserService.UserRegister(&p); err != nil {
-		a.AppController.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	a.AppController.CreateToken(&p)
-	a.AppController.RespondWithJSON(w, http.StatusCreated, p)
-}
-
-func (a *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
-	var p *models.User
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&p); err != nil {
-		a.AppController.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-	defer r.Body.Close()
-
-	if err := a.UserService.LoginUser(p); err != nil {
-		a.AppController.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	a.AppController.CreateToken(p)
-	a.AppController.RespondWithJSON(w, http.StatusCreated, p)
-}
-
 func (a *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
