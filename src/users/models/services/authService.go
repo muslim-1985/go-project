@@ -48,7 +48,7 @@ func (s *AuthService) UserRegister(p *models.User) error {
 		return err
 	}
 
-	p.AddRole()
+	p.AddDefaultRole()
 
 	err = s.UserRepository.CreateUser(p)
 	if err != nil {

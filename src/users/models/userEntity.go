@@ -42,7 +42,7 @@ func (p *User) CreatePasswordHash() error  {
 	return nil
 }
 
-func (p *User) AddRole ()  {
+func (p *User) AddDefaultRole ()  {
 	if p.RoleId == 0 {
 		p.RoleId = RoleUser
 	}
