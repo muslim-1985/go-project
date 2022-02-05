@@ -4,7 +4,6 @@ import (
 	"errors"
 	"go_project/src/users/models"
 	"go_project/src/users/store"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
@@ -22,12 +21,10 @@ func (s *AuthService) LoginUser(p *models.User) error {
 		if err != nil {
 			return err
 		}
+		err = p.IsPasswordValid(password)
 
-		byteHash := []byte(password)
-		bytePass := []byte(p.Password)
-		result := bcrypt.CompareHashAndPassword(byteHash, bytePass)
-		if result != nil {
-			return errors.New("Login or password is not correct")
+		if err != nil {
+			return err
 		}
 		return s.UserRepository.GetUsernameAndEmail(p)
 	}
@@ -45,13 +42,11 @@ func (s *AuthService) UserRegister(p *models.User) error {
 		return errors.New("A user is already registered to this mail")
 	}
 
-	bytePassword := []byte(p.Password)
-	hash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.MinCost)
+	err = p.CreatePasswordHash()
+
 	if err != nil {
 		return err
 	}
-	password := string(hash)
-	p.Password = password
 
 	err = s.UserRepository.CreateUser(p)
 	if err != nil {
