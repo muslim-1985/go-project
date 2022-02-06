@@ -14,5 +14,7 @@ RUN go mod download
 
 RUN go build -o /go/src/myapp/go_pr
 
+EXPOSE 8080
+
 # Command to run
-ENTRYPOINT ["/go/src/myapp/go_pr"]
+CMD ["/go/src/myapp/go_pr"]

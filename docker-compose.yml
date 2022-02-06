@@ -4,6 +4,8 @@ services:
   web:
     container_name: go-main
     build: ./
+    volumes:
+      - ./src:/go/src/myapp/src
     ports:
       - "8000:8080"
     environment:

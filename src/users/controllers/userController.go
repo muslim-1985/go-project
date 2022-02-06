@@ -16,6 +16,11 @@ type UserController struct {
 	UserService services.UserServiceInterface
 }
 
+func (a *UserController) Home (w http.ResponseWriter, r *http.Request)  {
+	c := map[string][]string{"message": {"how are you?", "redudant"}}
+	a.AppController.RespondWithJSON(w, http.StatusOK, c)
+}
+
 func (a *UserController) GetUsers(w http.ResponseWriter, r *http.Request) {
 	count, _ := strconv.Atoi(r.FormValue("count"))
 	start, _ := strconv.Atoi(r.FormValue("start"))

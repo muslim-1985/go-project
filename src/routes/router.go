@@ -25,6 +25,7 @@ func (a *Route) initializeRoutes() {
 	a.Router.Use(a.Action.JwtAuthentication)
 	//user routes
 	func (u *controllers.UserController) {
+		a.Router.HandleFunc("/", u.Home).Methods("GET")
 		a.Router.HandleFunc("/api/users", u.GetUsers).Methods("GET")
 		////jwtMiddleware.Handler(c)
 		a.Router.HandleFunc("/api/user/{id:[0-9]+}", u.GetUser).Methods("GET")
