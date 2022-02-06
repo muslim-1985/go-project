@@ -7,16 +7,14 @@ ENV GO111MODULE=on \
     GOOS=linux \
     GOARCH=amd64
 
-WORKDIR /app
+WORKDIR /go/src/myapp
 
-COPY go.mod ./
+COPY . ./
 RUN go mod download
 
-COPY *.go ./
-
-RUN go build -o /main
+RUN go build -o /go_pr
 
 EXPOSE 8080
 
 # Command to run
-ENTRYPOINT ["/main"]
+ENTRYPOINT ["/go_pr"]
