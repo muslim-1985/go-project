@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func serverRun(address string, route routes.Route)  {
+func ServerRun(address string, route routes.Route)  {
 	server := &http.Server{
 		Addr:         address,
 		WriteTimeout: time.Second * 15,
