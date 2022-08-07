@@ -10,19 +10,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Install php
-        uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
-        with:
-          php-version: '8.1.2'
-
-      - name: Install Dependencies
-        working-directory: "symfony-docker"
-        run: |
-          php -r "file_exists('.env') || copy('.env.example', '.env');"
-          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-      - name: Set up QEMI
-        uses: docker/setup-qemu-action@v2
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -30,22 +17,22 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_KEY }}
 
-      - name: Build and push php
+      - name: Build and push go project
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags: akimmalidocker/shop:latest
+          tags: muslim1985/go-project:latest
 
-      - name: Build and push nginx
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: ./example-app/Dockerfile
-          push: true
-          tags: akimmalidocker/nginx:latest
+#      - name: Build and push nginx
+#        uses: docker/build-push-action@v3
+#        with:
+#          context: .
+#          file: ./example-app/Dockerfile
+#          push: true
+#          tags: akimmalidocker/nginx:latest
 
 #  deploy_to_server:
 #    needs: docker_build
