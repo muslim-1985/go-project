@@ -47,5 +47,5 @@ func main() {
 	//for i := 0; i < 5; i++ { //получаем 5 цитат и закругляемся
 	//	fmt.Println(<-quoteChan, "\n")
 	//}
-	ServerRun(":8080", r)
+	ServerRun(":80", r)
 }
