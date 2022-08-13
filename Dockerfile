@@ -17,4 +17,4 @@ RUN go build go_project/cmd/app
 EXPOSE 8080
 
 # Command to run
-CMD ["/var/www/go_project/app"]
+CMD ["/var/www/app"]
