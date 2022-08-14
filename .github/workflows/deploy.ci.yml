@@ -34,6 +34,14 @@ jobs:
       - name: Save DigitalOcean kubeconfig with short-lived credentials
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 k8s-1-22-11-do-0-ams3-1657563434881
 
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.8.1
+          exec: helm install my-chart k8s/mychart
+
+
+
 #  deploy_to_server:
 #    needs: docker_build
 #    name: Deploy
