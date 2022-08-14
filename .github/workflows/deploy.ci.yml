@@ -38,7 +38,13 @@ jobs:
         uses: azure/setup-helm@v1
         with:
           version: v3.8.1
-          exec: helm install my-chart k8s/mychart
+
+      - name: Lint helm charts
+        run: helm lint k8s/mychart
+
+      - name: Deploy
+        run: |
+          helm upgrade --install my-chart k8s/mychart
 
 
 
