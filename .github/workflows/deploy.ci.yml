@@ -26,13 +26,13 @@ jobs:
           push: true
           tags: muslim1985/go-project:latest
 
-#      - name: Install doctl
-#        uses: digitalocean/action-doctl@v2
-#        with:
-#          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-#
-#      - name: Save DigitalOcean kubeconfig with short-lived credentials
-#        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 <cluster-name>
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 k8s-1-22-11-do-0-ams3-1657563434881
 
 #  deploy_to_server:
 #    needs: docker_build
